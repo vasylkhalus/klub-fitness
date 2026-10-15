@@ -1,2 +1,2 @@
 # klub-fitness
-test1
+[Karta_projektu_klub-fitness.pdf](Karta_projektu_klub-fitness.pdf)
