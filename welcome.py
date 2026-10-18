@@ -1,0 +1,1 @@
+print("Witamy w naszym klubie!")
