@@ -1,0 +1,37 @@
+{
+    "uzytkownicy": {
+        "vasyl": {
+            "haslo": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+            "rola": "klubowicz",
+            "karnet_aktywny": true
+        }
+    },
+    "zajecia": [
+        {
+            "id": 1,
+            "nazwa": "CrossFit",
+            "termin": "Poniedziałek 18:00",
+            "trener": "Marek Kowalski",
+            "limit_miejsc": 10,
+            "zapisani": []
+        },
+        {
+            "id": 2,
+            "nazwa": "Joga / Mobility",
+            "termin": "Środa 17:30",
+            "trener": "Anna Nowak",
+            "limit_miejsc": 12,
+            "zapisani": [
+                "vasyl"
+            ]
+        },
+        {
+            "id": 3,
+            "nazwa": "Trening Siłowy (FBW)",
+            "termin": "Piątek 19:00",
+            "trener": "Piotr Wiśniewski",
+            "limit_miejsc": 8,
+            "zapisani": []
+        }
+    ]
+}
