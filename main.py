@@ -65,7 +65,7 @@ def zapisz_baze(baza: dict):
 
 
 # ==========================================
-# #6: REJESTRACJA I LOGOWANIE UŻYTKOWNIKÓW
+# #6: REJESTRACJA, LOGOWANIE I USUWANIE KONT
 # ==========================================
 def zahashuj_haslo(haslo: str) -> str:
     return hashlib.sha256(haslo.encode("utf-8")).hexdigest()
@@ -123,6 +123,19 @@ def logowanie(baza: dict):
     else:
         print("Błąd: Nieprawidłowy login lub hasło.")
         return None
+
+
+def usun_uzytkownika_z_bazy(login_do_usuniecia: str, baza: dict):
+    """Usuwa użytkownika ze słownika oraz wypisuje go ze wszystkich zajęć."""
+    if login_do_usuniecia in baza["uzytkownicy"]:
+        del baza["uzytkownicy"][login_do_usuniecia]
+
+        for z in baza["zajecia"]:
+            if login_do_usuniecia in z["zapisani"]:
+                z["zapisani"].remove(login_do_usuniecia)
+
+        zapisz_baze(baza)
+        print(f"Konto '{login_do_usuniecia}' zostało trwale usunięte.")
 
 
 # ==========================================
@@ -271,7 +284,8 @@ def panel_uzytkownika(login: str, baza: dict):
             print("2. Zarezerwuj miejsce na zajęciach")
             print("3. Moje rezerwacje / Odwołaj rezerwację")
             print("4. Kup / przedłuż karnet")
-            print("5. Wyloguj")
+            print("5. Usuń moje konto")
+            print("6. Wyloguj")
 
             wybor = input("Wybór: ").strip()
             if wybor == "1":
@@ -285,6 +299,15 @@ def panel_uzytkownika(login: str, baza: dict):
                 zapisz_baze(baza)
                 print("Karnet został aktywowany!")
             elif wybor == "5":
+                potwierdzenie = (
+                    input("Czy na pewno chcesz usunąć konto? (tak/nie): ")
+                    .strip()
+                    .lower()
+                )
+                if potwierdzenie == "tak":
+                    usun_uzytkownika_z_bazy(login, baza)
+                    break
+            elif wybor == "6":
                 print("Wylogowano.")
                 break
             else:
@@ -294,7 +317,8 @@ def panel_uzytkownika(login: str, baza: dict):
             print("1. Przeglądaj harmonogram i listy zapisanych")
             print("2. Dodaj nowe zajęcia do harmonogramu")
             print("3. Wyświetl listę klubowiczów")
-            print("4. Wyloguj")
+            print("4. Usuń klubowicza")
+            print("5. Wyloguj")
 
             wybor = input("Wybór: ").strip()
             if wybor == "1":
@@ -319,6 +343,16 @@ def panel_uzytkownika(login: str, baza: dict):
                         )
                         print(f"- {u_login} (karnet: {status})")
             elif wybor == "4":
+                cel = input(
+                    "Podaj login klubowicza do usunięcia: "
+                ).strip()
+                if cel not in baza["uzytkownicy"]:
+                    print("Błąd: Nie ma takiego użytkownika.")
+                elif baza["uzytkownicy"][cel]["rola"] != "klubowicz":
+                    print("Błąd: Możesz usuwać tylko konta klubowiczów.")
+                else:
+                    usun_uzytkownika_z_bazy(cel, baza)
+            elif wybor == "5":
                 print("Wylogowano.")
                 break
             else:
