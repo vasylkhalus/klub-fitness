@@ -1,6 +1,7 @@
 import hashlib
 import json
 import os
+from datetime import date, timedelta
 
 PLIK_BAZY = "baza_klubu.json"
 
@@ -64,6 +65,14 @@ def zapisz_baze(baza: dict):
         json.dump(baza, plik, indent=4, ensure_ascii=False)
 
 
+def czy_karnet_aktywny(dane_uzytkownika: dict) -> bool:
+    """Sprawdza, czy użytkownik posiada ważny karnet."""
+    karnet_do = dane_uzytkownika.get("karnet_do")
+    if not karnet_do:
+        return False
+    return date.today() <= date.fromisoformat(karnet_do)
+
+
 # ==========================================
 # #6: REJESTRACJA, LOGOWANIE I USUWANIE KONT
 # ==========================================
@@ -101,7 +110,7 @@ def rejestracja(baza: dict):
     uzytkownicy[login] = {
         "haslo": zahashuj_haslo(haslo),
         "rola": rola,
-        "karnet_aktywny": False if rola == "klubowicz" else None,
+        "karnet_do": None,
     }
 
     zapisz_baze(baza)
@@ -239,6 +248,37 @@ def anuluj_rezerwacje(login: str, baza: dict):
         print("Błąd: Nie masz rezerwacji na zajęcia o tym ID.")
 
 
+def kup_karnet(dane: dict, baza: dict):
+    if czy_karnet_aktywny(dane):
+        print(f"\nMasz już aktywny karnet ważny do {dane['karnet_do']}.")
+        print("Nowy karnet możesz kupić dopiero po wygaśnięciu obecnego.")
+        return
+
+    print("\n--- ZAKUP KARNETU ---")
+    print("1. Karnet miesięczny (30 dni)")
+    print("2. Karnet roczny (365 dni)")
+    print("0. Anuluj")
+
+    wybor = input("Wybierz rodzaj karnetu: ").strip()
+
+    if wybor == "1":
+        dni = 30
+        typ = "miesięczny"
+    elif wybor == "2":
+        dni = 365
+        typ = "roczny"
+    elif wybor == "0":
+        return
+    else:
+        print("Błąd: Nieprawidłowy wybór.")
+        return
+
+    data_konca = date.today() + timedelta(days=dni)
+    dane["karnet_do"] = data_konca.isoformat()
+    zapisz_baze(baza)
+    print(f"Kupiono karnet {typ}! Ważny do: {dane['karnet_do']}.")
+
+
 def dodaj_zajecia_trener(login: str, baza: dict):
     print("\n--- DODAWANIE NOWYCH ZAJĘĆ ---")
     nazwa = input("Nazwa zajęć: ").strip()
@@ -276,14 +316,16 @@ def panel_uzytkownika(login: str, baza: dict):
     while True:
         print(f"\n=== PANEL UŻYTKOWNIKA: {login.upper()} ({dane['rola']}) ===")
         if dane["rola"] == "klubowicz":
-            status_karnetu = (
-                "Aktywny" if dane["karnet_aktywny"] else "Brak aktywnego karnetu"
-            )
+            if czy_karnet_aktywny(dane):
+                status_karnetu = f"Aktywny (ważny do {dane['karnet_do']})"
+            else:
+                status_karnetu = "Brak aktywnego karnetu"
+
             print(f"Status karnetu: {status_karnetu}")
             print("1. Przeglądaj harmonogram zajęć")
             print("2. Zarezerwuj miejsce na zajęciach")
             print("3. Moje rezerwacje / Odwołaj rezerwację")
-            print("4. Kup / przedłuż karnet")
+            print("4. Kup karnet")
             print("5. Usuń moje konto")
             print("6. Wyloguj")
 
@@ -295,9 +337,7 @@ def panel_uzytkownika(login: str, baza: dict):
             elif wybor == "3":
                 anuluj_rezerwacje(login, baza)
             elif wybor == "4":
-                dane["karnet_aktywny"] = True
-                zapisz_baze(baza)
-                print("Karnet został aktywowany!")
+                kup_karnet(dane, baza)
             elif wybor == "5":
                 potwierdzenie = (
                     input("Czy na pewno chcesz usunąć konto? (tak/nie): ")
@@ -337,8 +377,8 @@ def panel_uzytkownika(login: str, baza: dict):
                 for u_login, u_dane in baza["uzytkownicy"].items():
                     if u_dane["rola"] == "klubowicz":
                         status = (
-                            "Aktywny"
-                            if u_dane["karnet_aktywny"]
+                            f"Aktywny (do {u_dane['karnet_do']})"
+                            if czy_karnet_aktywny(u_dane)
                             else "Nieaktywny"
                         )
                         print(f"- {u_login} (karnet: {status})")
