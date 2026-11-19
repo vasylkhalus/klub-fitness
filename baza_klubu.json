@@ -1,9 +1,16 @@
 {
     "uzytkownicy": {
-        "vasyl": {
-            "haslo": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+        "pavlo": {
+            "haslo": "a5e94f923d9a26a0bca3b9888ca995106058643ad59b6db48aa8d40737c9eda4",
+            "rola": "trener",
+            "karnet_aktywny": null
+        },
+        "pavloK": {
+            "haslo": "578c70e1b63dcaa69d453d7963943674eba4cf1e42ac2915d3d4bceb456f34f6",
             "rola": "klubowicz",
-            "karnet_aktywny": true
+            "karnet_aktywny": true,
+            "karnet_do": "2026-12-19"
+        }
     },
     "zajecia": [
         {
@@ -20,9 +27,7 @@
             "termin": "Środa 17:30",
             "trener": "Anna Nowak",
             "limit_miejsc": 12,
-            "zapisani": [
-                "vasyl"
-            ]
+            "zapisani": []
         },
         {
             "id": 3,
@@ -31,6 +36,16 @@
             "trener": "Piotr Wiśniewski",
             "limit_miejsc": 8,
             "zapisani": []
+        },
+        {
+            "id": 4,
+            "nazwa": "running",
+            "termin": "Monday 5:00",
+            "trener": "pavlo",
+            "limit_miejsc": 5,
+            "zapisani": [
+                "pavloK"
+            ]
         }
     ]
 }
